@@ -15,13 +15,19 @@
  */
 package org.apacheextras.camel.component.rcode;
 
+import java.net.ConnectException;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.security.auth.login.LoginException;
 import org.apache.camel.Exchange;
+import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.Message;
 import org.apache.camel.NoSuchHeaderException;
 import org.apache.camel.impl.DefaultProducer;
 import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REngineException;
+import org.rosuda.REngine.Rserve.RserveException;
 
 /**
  *
@@ -37,7 +43,9 @@ public class RCodeProducer extends DefaultProducer {
   }
 
   @Override
-  public void process(Exchange exchange) throws Exception {
+  public void process(Exchange exchange) throws NoSuchHeaderException, 
+    RserveException, LoginException, ConnectException, InvalidPayloadException, 
+    REngineException, REXPMismatchException {
     final Message in = exchange.getIn();
     final Map<String, Object> headers = in.getHeaders();
 
@@ -55,7 +63,8 @@ public class RCodeProducer extends DefaultProducer {
     exchange.getOut().setAttachments(in.getAttachments());
   }
 
-  private Exchange executeOperation(Message in, Map<String, Object> headers) throws Exception {
+  private Exchange executeOperation(Message in, Map<String, Object> headers) 
+      throws InvalidPayloadException, RserveException, REngineException, REXPMismatchException {
     final Exchange exchange = in.getExchange();
 
     if (headers.get(RCodeConstants.RSERVE_OPERATION).equals(RCodeOperation.EVAL_COMMAND)) {

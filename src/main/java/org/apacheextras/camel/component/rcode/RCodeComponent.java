@@ -16,6 +16,7 @@
 package org.apacheextras.camel.component.rcode;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
@@ -29,7 +30,7 @@ public class RCodeComponent extends DefaultComponent {
   private RCodeConfiguration configuration;
 
   @Override
-  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
+  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws URISyntaxException, Exception {
     RCodeConfiguration newConfiguration;
     if (null == configuration) {
       newConfiguration = new RCodeConfiguration(new URI(uri));

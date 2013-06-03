@@ -65,13 +65,13 @@ public class RCodeEndpoint extends DefaultEndpoint {
   }
 
   @Override
-  protected void doStart() throws Exception {
+  protected void doStart() throws RserveException, Exception {
     super.doStart();
     connect();
   }
 
   @Override
-  protected void doStop() throws Exception {
+  protected void doStop() throws Exception  {
     rConnection.close();
     super.doStop();
   }
@@ -80,7 +80,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
     return rConnection.isConnected();
   }
 
-  public void reconnect() throws Exception {
+  public void reconnect() throws RserveException, LoginException, ConnectException{
     connect();
   }
 
@@ -89,14 +89,18 @@ public class RCodeEndpoint extends DefaultEndpoint {
       try {
         rConnection = new RConnection(rCodeConfiguration.getHost(), rCodeConfiguration.getPort());
       } catch (RserveException ex) {
-        throw new ConnectException("Could not connect to Rserve: '" + ex.getMessage() + "'");
+        final ConnectException e = new ConnectException("Could not connect to Rserve: '" + ex.getMessage() + "'");
+        e.setStackTrace(ex.getStackTrace());
+        throw e;
       }
     }
     if (rConnection.needLogin()) {
       try {
         rConnection.login(rCodeConfiguration.getUser(), rCodeConfiguration.getPassword());
       } catch (RserveException ex) {
-        throw new LoginException("Could not login to Rserve: '" + ex.getMessage() + "'");
+        final LoginException e = new LoginException("Could not connect to Rserve: '" + ex.getMessage() + "'");
+        e.setStackTrace(ex.getStackTrace());
+        throw e;
       }
     }
     rConnection.setStringEncoding("utf8");

@@ -54,10 +54,6 @@ public class RCodeConfiguration implements Cloneable {
   }
 
   public RCodeConfiguration(URI uri) {
-    configure(uri);
-  }
-
-  private void configure(URI uri) {
     // Configure the host based on the endpoint URI
     final String uriHost = uri.getHost();
     if (null != uriHost) {
