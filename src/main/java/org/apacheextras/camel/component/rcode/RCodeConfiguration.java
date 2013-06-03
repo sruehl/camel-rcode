@@ -147,9 +147,9 @@ public class RCodeConfiguration implements Cloneable {
   public void setBufferSize(long bufferSize) {
     // Set the buffer size to it's limits in bytes
     if (bufferSize < 32768) { // lowest buffer 32KB
-      bufferSize = 32768;
+      this.bufferSize = 32768;
     } else if (bufferSize > 1073741824) { // largest buffer 1GB
-      bufferSize = 1073741824;
+      this.bufferSize = 1073741824;
     }
     this.bufferSize = bufferSize;
   }
