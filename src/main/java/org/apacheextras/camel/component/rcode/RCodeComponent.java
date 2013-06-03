@@ -53,7 +53,7 @@ public class RCodeComponent extends DefaultComponent {
   public void setConfiguration(RCodeConfiguration configuration) {
     this.configuration = configuration;
   }
-
+  
   public String getHost() {
     return getConfiguration().getHost();
   }
