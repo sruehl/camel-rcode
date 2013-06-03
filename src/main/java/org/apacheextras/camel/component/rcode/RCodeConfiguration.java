@@ -22,7 +22,7 @@ import org.apache.camel.RuntimeCamelException;
  *
  * @author cemmersb
  */
-public class RCodeConfiguration implements Cloneable {
+public final class RCodeConfiguration implements Cloneable {
 
   /**
    * The default rServe host set to

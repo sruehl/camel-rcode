@@ -89,18 +89,14 @@ public class RCodeEndpoint extends DefaultEndpoint {
       try {
         rConnection = new RConnection(rCodeConfiguration.getHost(), rCodeConfiguration.getPort());
       } catch (RserveException ex) {
-        final ConnectException e = new ConnectException("Could not connect to Rserve: '" + ex.getMessage() + "'");
-        e.setStackTrace(ex.getStackTrace());
-        throw e;
+        throw ex;
       }
     }
     if (rConnection.needLogin()) {
       try {
         rConnection.login(rCodeConfiguration.getUser(), rCodeConfiguration.getPassword());
       } catch (RserveException ex) {
-        final LoginException e = new LoginException("Could not connect to Rserve: '" + ex.getMessage() + "'");
-        e.setStackTrace(ex.getStackTrace());
-        throw e;
+        throw ex;
       }
     }
     rConnection.setStringEncoding("utf8");
