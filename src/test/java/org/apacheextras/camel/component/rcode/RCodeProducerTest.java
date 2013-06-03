@@ -27,8 +27,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.REXPList;
-import org.rosuda.REngine.RList;
 
 /**
  *
