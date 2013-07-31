@@ -36,6 +36,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
 
   private RConnection rConnection;
   private RCodeConfiguration rCodeConfiguration;
+  private String operation;
 
   public RCodeEndpoint() {
   }
@@ -44,14 +45,15 @@ public class RCodeEndpoint extends DefaultEndpoint {
     super(endpointUri, component);
   }
 
-  public RCodeEndpoint(String endpointUri, RCodeComponent component, RCodeConfiguration configuration) {
+  public RCodeEndpoint(String endpointUri, RCodeComponent component, RCodeConfiguration configuration, String operation) {
     super(endpointUri, component);
     this.rCodeConfiguration = configuration;
+    this.operation = operation;
   }
 
   @Override
   public Producer createProducer() throws Exception {
-    return new RCodeProducer(this);
+    return new RCodeProducer(this, operation);
   }
 
   @Override

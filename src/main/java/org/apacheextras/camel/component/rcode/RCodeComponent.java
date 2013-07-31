@@ -15,11 +15,13 @@
  */
 package org.apacheextras.camel.component.rcode;
 
+import org.apache.camel.Endpoint;
+import org.apache.camel.RuntimeCamelException;
+import org.apache.camel.impl.DefaultComponent;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
 
 /**
  *
@@ -38,9 +40,21 @@ public class RCodeComponent extends DefaultComponent {
       newConfiguration = configuration.copy();
     }
 
-    RCodeEndpoint endpoint = new RCodeEndpoint(uri, this, newConfiguration);
+    validate(remaining);
+
+    RCodeEndpoint endpoint = new RCodeEndpoint(uri, this, newConfiguration, remaining);
     setProperties(endpoint.getConfiguration(), parameters);
     return endpoint;
+  }
+
+  private void validate(String remaining) {
+    for (RCodeOperation rCodeOperation : RCodeOperation.values()) {
+      if (rCodeOperation.getMethod().equals(remaining)) {
+        // Valid operation
+        return;
+      }
+    }
+      throw new RuntimeCamelException("Invalid operation in URL for R-Code:"+remaining);
   }
 
   public RCodeConfiguration getConfiguration() {
