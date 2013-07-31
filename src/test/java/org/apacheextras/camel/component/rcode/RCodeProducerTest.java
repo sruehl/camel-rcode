@@ -15,24 +15,42 @@
  */
 package org.apacheextras.camel.component.rcode;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Before;
 import org.junit.Test;
 import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 /**
  *
  * @author cemmersb
  */
 public class RCodeProducerTest extends CamelTestSupport {
+
+  @Override
+  @Before
+  public void setUp() throws Exception {
+    // We supply a fake factory to mock the RConnection Instance.
+    RConnectionFactory.SingletonHolder.INSTANCE = new RConnectionFactory() {
+      @Override
+      public RConnection createConnection(RCodeConfiguration rCodeConfiguration) throws RserveException {
+        return mock(RConnection.class, RETURNS_DEEP_STUBS);
+      }
+    };
+    super.setUp();
+  }
 
   @Test
   public void sendEvalCommandTest() throws Exception {
