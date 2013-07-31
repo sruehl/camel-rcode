@@ -15,8 +15,6 @@
  */
 package org.apacheextras.camel.component.rcode;
 
-import java.net.ConnectException;
-import javax.security.auth.login.LoginException;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
@@ -26,6 +24,9 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
+
+import javax.security.auth.login.LoginException;
+import java.net.ConnectException;
 
 /**
  *
@@ -87,7 +88,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
   private void connect() throws RserveException, LoginException, ConnectException {
     if (null == rConnection) {
       try {
-        rConnection = new RConnection(rCodeConfiguration.getHost(), rCodeConfiguration.getPort());
+        rConnection = RConnectionFactory.getInstance().createConnection(rCodeConfiguration);
       } catch (RserveException ex) {
         throw ex;
       }
@@ -134,7 +135,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
   }
 
   /**
-   * @param rCodeConfiguration the rCodeConfiguration to set
+   * @param configuration the rCodeConfiguration to set
    */
   public void setConfiguration(RCodeConfiguration configuration) {
     this.rCodeConfiguration = configuration;
