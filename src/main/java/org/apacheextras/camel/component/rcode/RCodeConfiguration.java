@@ -20,7 +20,8 @@ import org.apache.camel.RuntimeCamelException;
 import java.net.URI;
 
 /**
- *
+ * The RCodeConfiguration object contains all elements that can be configured
+ * on an endpoint or component.
  * @author cemmersb
  */
 public final class RCodeConfiguration implements Cloneable {
@@ -50,10 +51,23 @@ public final class RCodeConfiguration implements Cloneable {
   private String password;
   // Field defining the buffer size
   private long bufferSize = DEFAULT_BUFFER_SIZE;
-
+  
+  /**
+   * Creates a new RCodeConfiguration object with default values.
+   * The default values are:</br>
+   * <ul>
+   *   <li>host = 127.0.0.1</li>
+   *   <li>port = 6311</li>
+   *   <li>bufferSize = 2MB</li>
+   * </ul>
+   */
   public RCodeConfiguration() {
   }
-
+  
+  /**
+   * Creates ab RCodeConfiguration based on an URI parameter.
+   * @param uri URI
+   */
   public RCodeConfiguration(URI uri) {
     // Configure the host based on the endpoint URI
     final String uriHost = uri.getHost();
@@ -66,7 +80,12 @@ public final class RCodeConfiguration implements Cloneable {
       setPort(uriPort);
     }
   }
-
+  
+  /**
+   * Copies the existing RCodeConfiguration into a new object.
+   * The new object is an actual clone of the original.
+   * @return RCodeConfiguration
+   */
   public RCodeConfiguration copy() {
     try {
       return (RCodeConfiguration) clone();
@@ -143,6 +162,7 @@ public final class RCodeConfiguration implements Cloneable {
    */
   public void setBufferSize(long bufferSize) {
     // Set the buffer size to it's limits in bytes
+    // Note: The boundaries that can be processed are 32K and 1GB
     if (bufferSize < 1024 * 32) { // lowest buffer 32KB
       this.bufferSize = 1024 * 32;
     } else if (bufferSize > 1024 * 1024 * 1024) { // largest buffer 1GB
