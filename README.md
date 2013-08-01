@@ -28,11 +28,12 @@ entering the R console.
 - sendParseAndEval(String command)
 
 ## URI format
-> rcode:host[:port][?options]
+> rcode:host[:port]/operation[?options]
 
 - <b>rcode</b> is the unique component key
 - <b>host</b> defines a hostname as [Java URI](http://docs.oracle.com/javase/6/docs/api/java/net/URI.html)
 - <b>port</b> defines the connection [port] (http://docs.oracle.com/javase/6/docs/api/java/net/URI.html)
+- <b>operation</b> defines the operation executed via the endpoint.
 - <b>options</b> configure additional parameters.
 
 ## Options
