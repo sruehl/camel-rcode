@@ -19,7 +19,6 @@ package org.apacheextras.camel.component.rcode;
  *
  * @author cemmersb
  */
-public interface RCodeConstants {
+public final class RCodeConstants {
   public static final String RSERVE_OPERATION = "RSRV_OP";
-  
 }

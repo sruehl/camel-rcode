@@ -15,27 +15,12 @@
  */
 package org.apacheextras.camel.component.rcode;
 
-/**
- *
- * @author cemmersb
- */
+/** @author cemmersb */
 public enum RCodeOperation {
-  
-  ASSIGN_CONTENT ("ASC"),
-  ASSIGN_EXPRESSION ("ASE"),
-  EVAL_COMMAND ("EVC"),
-  VOID_EVAL_COMMAND("VEC"),
-  GET_VALUE("GVA"),
-  PARSE_AND_EVAL("PAE");
-  
-  private String method;
-  
-  RCodeOperation(String method) {
-    this.method = method;
-  }
-  
-  public String getMethod() {
-    return method;
-  }
-  
+  ASSIGN_CONTENT,
+  ASSIGN_EXPRESSION,
+  EVAL,
+  VOID_EVAL,
+  GET_VALUE,
+  PARSE_AND_EVAL
 }

@@ -15,8 +15,9 @@
  */
 package org.apacheextras.camel.component.rcode;
 
-import java.net.URI;
 import org.apache.camel.RuntimeCamelException;
+
+import java.net.URI;
 
 /**
  *
@@ -38,7 +39,7 @@ public final class RCodeConfiguration implements Cloneable {
    * Default buffer size set to
    * <code>2MB</code> in bytes.
    */
-  public static final long DEFAULT_BUFFER_SIZE = 2097152;
+  public static final long DEFAULT_BUFFER_SIZE = 1024 * 1024 * 2;
   // Initialize the default host
   private String host = DEFAULT_RSERVE_HOST;
   // Initialize the default port
@@ -56,7 +57,7 @@ public final class RCodeConfiguration implements Cloneable {
   public RCodeConfiguration(URI uri) {
     // Configure the host based on the endpoint URI
     final String uriHost = uri.getHost();
-    if (null != uriHost) {
+    if (null != uriHost && !uriHost.trim().isEmpty()) {
       setHost(uriHost);
     }
     // Configure port based on endpoint URI
@@ -142,10 +143,10 @@ public final class RCodeConfiguration implements Cloneable {
    */
   public void setBufferSize(long bufferSize) {
     // Set the buffer size to it's limits in bytes
-    if (bufferSize < 32768) { // lowest buffer 32KB
-      this.bufferSize = 32768;
-    } else if (bufferSize > 1073741824) { // largest buffer 1GB
-      this.bufferSize = 1073741824;
+    if (bufferSize < 1024 * 32) { // lowest buffer 32KB
+      this.bufferSize = 1024 * 32;
+    } else if (bufferSize > 1024 * 1024 * 1024) { // largest buffer 1GB
+      this.bufferSize = 1024 * 1024 * 1024;
     }
     this.bufferSize = bufferSize;
   }
