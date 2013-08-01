@@ -39,6 +39,8 @@ import static org.mockito.Mockito.mock;
  */
 public class RCodeProducerTest extends CamelTestSupport {
 
+  RConnection rConnection = mock(RConnection.class, RETURNS_DEEP_STUBS);
+
   @Override
   @Before
   public void setUp() throws Exception {
@@ -46,7 +48,7 @@ public class RCodeProducerTest extends CamelTestSupport {
     RConnectionFactory.SingletonHolder.INSTANCE = new RConnectionFactory() {
       @Override
       public RConnection createConnection(RCodeConfiguration rCodeConfiguration) throws RserveException {
-        return mock(RConnection.class, RETURNS_DEEP_STUBS);
+        return rConnection;
       }
     };
     super.setUp();
@@ -80,7 +82,7 @@ public class RCodeProducerTest extends CamelTestSupport {
 
     // Send out the RCode version command
     template.sendBodyAndHeader("direct:rcode", command,
-        RCodeConstants.RSERVE_OPERATION, RCodeOperation.EVAL_COMMAND);
+        RCodeConstants.RSERVE_OPERATION, RCodeOperation.EVAL);
 
     // Check if at least one result could be retrieved
     mockEndpoint.assertIsSatisfied();
@@ -127,24 +129,10 @@ public class RCodeProducerTest extends CamelTestSupport {
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
     mockEndpoint.expectedMinimumMessageCount(1);
     mockEndpoint.expectedMessageCount(1);
-    mockEndpoint.whenExchangeReceived(1, new Processor() {
-      @Override
-      public void process(Exchange exchange) throws Exception {
-        final Map<String, Object> headers = exchange.getIn().getHeaders();
-        if (headers.containsKey(RCodeConstants.RSERVE_OPERATION)) {
-          try {
-            assertTrue(headers.containsValue(RCodeOperation.VOID_EVAL_COMMAND));
-          } catch (Exception ex) {
-            fail();
-            throw new Exception(ex);
-          }
-        }
-      }
-    });
 
     // Send out the RCode version command
     template.sendBodyAndHeader("direct:rcode", command,
-        RCodeConstants.RSERVE_OPERATION, RCodeOperation.VOID_EVAL_COMMAND);
+        RCodeConstants.RSERVE_OPERATION, RCodeOperation.VOID_EVAL);
 
     // Check if at least one result could be retrieved
     mockEndpoint.assertIsSatisfied();
@@ -162,7 +150,7 @@ public class RCodeProducerTest extends CamelTestSupport {
         // Send commands to the RCode endpoint
         from(
             "direct:rcode")
-            .to("rcode:localhost:6311?user=test&password=test123&bufferSize=4194304")
+            .to("rcode:localhost:6311/eval?user=test&password=test123&bufferSize=4194304")
             .to("mock:rcode");
       }
     };

@@ -36,7 +36,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
 
   private RConnection rConnection;
   private RCodeConfiguration rCodeConfiguration;
-  private String operation;
+  private RCodeOperation operation;
 
   public RCodeEndpoint() {
   }
@@ -45,7 +45,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
     super(endpointUri, component);
   }
 
-  public RCodeEndpoint(String endpointUri, RCodeComponent component, RCodeConfiguration configuration, String operation) {
+  public RCodeEndpoint(String endpointUri, RCodeComponent component, RCodeConfiguration configuration, RCodeOperation operation) {
     super(endpointUri, component);
     this.rCodeConfiguration = configuration;
     this.operation = operation;

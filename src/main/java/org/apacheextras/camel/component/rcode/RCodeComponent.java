@@ -16,23 +16,20 @@
 package org.apacheextras.camel.component.rcode;
 
 import org.apache.camel.Endpoint;
-import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.impl.DefaultComponent;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-/**
- *
- * @author cemmersb
- */
+/** @author cemmersb */
 public class RCodeComponent extends DefaultComponent {
 
   private RCodeConfiguration configuration;
 
   @Override
-  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws URISyntaxException, Exception {
+  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters)
+          throws URISyntaxException, Exception {
     RCodeConfiguration newConfiguration;
     if (null == configuration) {
       newConfiguration = new RCodeConfiguration(new URI(uri));
@@ -40,21 +37,14 @@ public class RCodeComponent extends DefaultComponent {
       newConfiguration = configuration.copy();
     }
 
-    validate(remaining);
+    // We only look at the first path element
+    String operation = remaining.substring(remaining.indexOf("/") + 1);
 
-    RCodeEndpoint endpoint = new RCodeEndpoint(uri, this, newConfiguration, remaining);
+    RCodeOperation rCodeOperation = RCodeOperation.valueOf(operation.toUpperCase());
+
+    RCodeEndpoint endpoint = new RCodeEndpoint(uri, this, newConfiguration, rCodeOperation);
     setProperties(endpoint.getConfiguration(), parameters);
     return endpoint;
-  }
-
-  private void validate(String remaining) {
-    for (RCodeOperation rCodeOperation : RCodeOperation.values()) {
-      if (rCodeOperation.getMethod().equals(remaining)) {
-        // Valid operation
-        return;
-      }
-    }
-      throw new RuntimeCamelException("Invalid operation in URL for R-Code:"+remaining);
   }
 
   public RCodeConfiguration getConfiguration() {
@@ -67,7 +57,7 @@ public class RCodeComponent extends DefaultComponent {
   public void setConfiguration(RCodeConfiguration configuration) {
     this.configuration = configuration;
   }
-  
+
   public String getHost() {
     return getConfiguration().getHost();
   }
@@ -99,11 +89,11 @@ public class RCodeComponent extends DefaultComponent {
   public void setPassword(String password) {
     getConfiguration().setPassword(password);
   }
-  
+
   public long getBufferSize() {
     return getConfiguration().getBufferSize();
   }
-  
+
   public void setBufferSize(long bufferSize) {
     getConfiguration().setBufferSize(bufferSize);
   }

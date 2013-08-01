@@ -35,12 +35,12 @@ public class RCodeProducer extends DefaultProducer {
 
   private RCodeEndpoint endpoint;
 
-  private String operation;
+  private RCodeOperation operation;
 
-  public RCodeProducer(RCodeEndpoint rCodeEndpoint, String operation) {
+  public RCodeProducer(RCodeEndpoint rCodeEndpoint, RCodeOperation operation) {
     super(rCodeEndpoint);
     this.endpoint = rCodeEndpoint;
-    this.operation = operation != null ? operation : "eval";
+    this.operation = operation;
   }
 
   @Override
@@ -66,30 +66,43 @@ public class RCodeProducer extends DefaultProducer {
   }
 
   private Exchange executeOperation(Message in, Map<String, Object> headers)
-          throws InvalidPayloadException, RserveException, REngineException, REXPMismatchException {
+          throws InvalidPayloadException, REngineException, REXPMismatchException {
     final Exchange exchange = in.getExchange();
 
-    if (operation.equals(RCodeOperation.EVAL_COMMAND)) {
-      final String command = in.getMandatoryBody(String.class);
-      REXP rexp = endpoint.sendEval(command);
-      exchange.getOut().setBody(rexp);
-    } else if (operation.equals(RCodeOperation.VOID_EVAL_COMMAND)) {
-      final String command = in.getMandatoryBody(String.class);
-      endpoint.sendVoidEval(command);
-    } else if (operation.equals(RCodeOperation.ASSIGN_CONTENT)) {
-      final Entry<String, String> assignment = in.getMandatoryBody(Entry.class);
-      endpoint.sendAssign(assignment.getKey(), assignment.getValue());
-    } else if (operation.equals(RCodeOperation.ASSIGN_EXPRESSION)) {
-      final Entry<String, REXP> assignment = in.getMandatoryBody(Entry.class);
-      endpoint.sendAssign(assignment.getKey(), assignment.getValue());
-    } else if (operation.equals(RCodeOperation.GET_VALUE)) {
-      final Entry<String, REXP> environmentValue = in.getMandatoryBody(Entry.class);
-      REXP rexp = endpoint.sendGet(environmentValue.getKey(), environmentValue.getValue());
-      exchange.getOut().setBody(rexp);
-    } else if (operation.equals(RCodeOperation.PARSE_AND_EVAL)) {
-      final String command = in.getMandatoryBody(String.class);
-      REXP rexp = endpoint.sendParseAndEval(command);
-      exchange.getOut().setBody(rexp);
+    switch (operation) {
+      case ASSIGN_CONTENT: {
+        final Entry<String, String> assignment = in.getMandatoryBody(Entry.class);
+        endpoint.sendAssign(assignment.getKey(), assignment.getValue());
+      }
+      break;
+      case ASSIGN_EXPRESSION: {
+        final Entry<String, REXP> assignment = in.getMandatoryBody(Entry.class);
+        endpoint.sendAssign(assignment.getKey(), assignment.getValue());
+      }
+      break;
+      case EVAL: {
+        final String command = in.getMandatoryBody(String.class);
+        REXP rexp = endpoint.sendEval(command);
+        exchange.getOut().setBody(rexp);
+      }
+      break;
+      case VOID_EVAL: {
+        final String command = in.getMandatoryBody(String.class);
+        endpoint.sendVoidEval(command);
+      }
+      break;
+      case GET_VALUE: {
+        final Entry<String, REXP> environmentValue = in.getMandatoryBody(Entry.class);
+        REXP rexp = endpoint.sendGet(environmentValue.getKey(), environmentValue.getValue());
+        exchange.getOut().setBody(rexp);
+      }
+      break;
+      case PARSE_AND_EVAL: {
+        final String command = in.getMandatoryBody(String.class);
+        REXP rexp = endpoint.sendParseAndEval(command);
+        exchange.getOut().setBody(rexp);
+      }
+      break;
     }
     return exchange;
   }
