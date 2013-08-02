@@ -44,29 +44,27 @@ public class RCodeProducer extends DefaultProducer {
   }
 
   @Override
-  public void process(Exchange exchange) throws NoSuchHeaderException,
-                                                RserveException, LoginException, ConnectException,
-                                                InvalidPayloadException,
-                                                REngineException, REXPMismatchException {
+  public void process(Exchange exchange) throws RserveException, LoginException, ConnectException,
+                                                InvalidPayloadException, REngineException, REXPMismatchException {
     final Message in = exchange.getIn();
     final Map<String, Object> headers = in.getHeaders();
 
     if (!endpoint.isConnected()) {
       endpoint.reconnect();
     }
-
+    
     if (headers.containsKey(RCodeConstants.RSERVE_OPERATION)) {
-      executeOperation(in, headers);
-    } else {
-      throw new NoSuchHeaderException(exchange, RCodeConstants.RSERVE_OPERATION, RCodeOperation.class);
+      final String op = headers.get(RCodeConstants.RSERVE_OPERATION).toString().toUpperCase();
+      operation = RCodeOperation.valueOf(op);
     }
-
+    executeOperation(in);
+    
     exchange.getOut().getHeaders().putAll(in.getHeaders());
     exchange.getOut().setAttachments(in.getAttachments());
   }
 
-  private Exchange executeOperation(Message in, Map<String, Object> headers)
-          throws InvalidPayloadException, REngineException, REXPMismatchException {
+  private Exchange executeOperation(Message in)
+          throws REngineException, REXPMismatchException, InvalidPayloadException {
     final Exchange exchange = in.getExchange();
 
     switch (operation) {

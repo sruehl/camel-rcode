@@ -26,9 +26,6 @@ import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -66,6 +63,7 @@ public class RCodeProducerTest extends CamelTestSupport {
     // Create a REXP that contains the expected version string
     final REXP rexp = new REXPString(expected);
     when(rConnection.eval(command)).thenReturn(rexp);
+    when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
     
     // Initialize a mock endpoint that receives at least one message
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
@@ -80,64 +78,12 @@ public class RCodeProducerTest extends CamelTestSupport {
           assertTrue(receivedRexp.asString().contains(expected));
         } catch (Exception ex) {
           fail();
-          throw new Exception(ex);
         }
       }
     });
 
     // Send out the RCode version command
-    template.sendBodyAndHeader("direct:rcode", command,
-        RCodeConstants.RSERVE_OPERATION, RCodeOperation.EVAL);
-
-    // Check if at least one result could be retrieved
-    mockEndpoint.assertIsSatisfied();
-  }
-
-  @Test
-  public void sendAssignContentTest() throws Exception {
-
-    final TreeMap<String, String> assignments = new TreeMap<String, String>();
-    assignments.put("mat", "matrix(seq(1:6), 2)");
-
-    final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
-    mockEndpoint.expectedMinimumMessageCount(1);
-    mockEndpoint.expectedMessageCount(1);
-    mockEndpoint.whenExchangeReceived(1, new Processor() {
-      @Override
-      public void process(Exchange exchange) throws Exception {
-        final Map<String, Object> headers = exchange.getIn().getHeaders();
-        if (headers.containsKey(RCodeConstants.RSERVE_OPERATION)) {
-          try {
-            assertTrue(headers.containsValue(RCodeOperation.ASSIGN_CONTENT));
-          } catch (Exception ex) {
-            fail();
-            throw new Exception(ex);
-          }
-        }
-      }
-    });
-
-    for (Entry<String, String> assigment : assignments.entrySet()) {
-      template.sendBodyAndHeader("direct:rcode", assigment,
-          RCodeConstants.RSERVE_OPERATION, RCodeOperation.ASSIGN_CONTENT);
-    }
-
-    mockEndpoint.assertIsSatisfied();
-  }
-  
-  @Test
-  public void sendVoidEvalTest() throws InterruptedException {
-    // R command to retrieve the version string from the server
-    final String command = "R.version.string";
-
-    // Initialize a mock endpoint that receives at least one message
-    final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
-    mockEndpoint.expectedMinimumMessageCount(1);
-    mockEndpoint.expectedMessageCount(1);
-
-    // Send out the RCode version command
-    template.sendBodyAndHeader("direct:rcode", command,
-        RCodeConstants.RSERVE_OPERATION, RCodeOperation.VOID_EVAL);
+    template.sendBody("direct:rcode", command);
 
     // Check if at least one result could be retrieved
     mockEndpoint.assertIsSatisfied();

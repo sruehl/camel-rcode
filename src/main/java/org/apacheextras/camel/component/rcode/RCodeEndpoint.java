@@ -25,15 +25,13 @@ import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
-import javax.security.auth.login.LoginException;
-import java.net.ConnectException;
-import java.util.logging.Level;
 import org.apache.camel.RuntimeCamelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * The RCodeEndpoint is the components Camel endpoint.
+ * 
  * @author cemmersb
  */
 public class RCodeEndpoint extends DefaultEndpoint {
@@ -52,6 +50,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
    * Creates an empty endpoint instance based on the default configuration.
    */
   public RCodeEndpoint() {
+    // Nothing to do
   }
 
   /**
@@ -157,10 +156,16 @@ public class RCodeEndpoint extends DefaultEndpoint {
     }
   }
   
+  /**
+   * Sends a String command and returns an R expression.
+   * @param command String
+   * @return REXP
+   */
   public REXP sendEval(String command) throws RserveException {
     return rConnection.eval(command);
   }
-
+  
+  
   public void sendVoidEval(String command) throws RserveException {
     rConnection.voidEval(command);
   }
