@@ -16,9 +16,14 @@
 package org.apacheextras.camel.component.rcode;
 
 /**
- *
+ * The RCodeConstants contain all constant variables used within the component.
+ * 
  * @author cemmersb
  */
 public final class RCodeConstants {
+  
+  /**
+   * Denotes the operations key value in the header of an exchange message.
+   */
   public static final String RSERVE_OPERATION = "RSRV_OP";
 }

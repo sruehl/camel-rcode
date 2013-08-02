@@ -32,6 +32,8 @@ import java.util.TreeMap;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.rosuda.REngine.REXPString;
 
 /**
  *
@@ -56,12 +58,15 @@ public class RCodeProducerTest extends CamelTestSupport {
 
   @Test
   public void sendEvalCommandTest() throws Exception {
-
+    
     // R command to retrieve the version string from the server
     final String command = "R.version.string";
     // Prefix of the REXP version result
     final String expected = "R version";
-
+    // Create a REXP that contains the expected version string
+    final REXP rexp = new REXPString(expected);
+    when(rConnection.eval(command)).thenReturn(rexp);
+    
     // Initialize a mock endpoint that receives at least one message
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
     mockEndpoint.expectedMinimumMessageCount(1);

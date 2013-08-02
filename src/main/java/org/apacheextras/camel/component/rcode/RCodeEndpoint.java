@@ -27,6 +27,10 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 import javax.security.auth.login.LoginException;
 import java.net.ConnectException;
+import java.util.logging.Level;
+import org.apache.camel.RuntimeCamelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,17 +38,41 @@ import java.net.ConnectException;
  */
 public class RCodeEndpoint extends DefaultEndpoint {
 
+  // Logger to provide a certain level of information
+  private static final Logger LOGGER = LoggerFactory.getLogger(RCodeEndpoint.class);
+  // RConnection utilizes the RServe package of 'R'
   private RConnection rConnection;
+  // Configuration contains all default values that can be overwritten by 
+  // the endpoint configuration.
   private RCodeConfiguration rCodeConfiguration;
+  // Contains all supported operations as enumeration
   private RCodeOperation operation;
 
+  /**
+   * Creates an empty endpoint instance based on the default configuration.
+   */
   public RCodeEndpoint() {
   }
 
+  /**
+   * Creates an endpoint based on the uri and the given component.
+   *
+   * @param endpointUri String
+   * @param component RCodeComponent
+   */
   public RCodeEndpoint(String endpointUri, RCodeComponent component) {
     super(endpointUri, component);
   }
 
+  /**
+   * Creates an endpoint based on the uri, component, configuration and
+   * operation.
+   *
+   * @param endpointUri String
+   * @param component RCodeComponent
+   * @param configuration RCodeConfiguration
+   * @param operation RCodeOperation
+   */
   public RCodeEndpoint(String endpointUri, RCodeComponent component, RCodeConfiguration configuration, RCodeOperation operation) {
     super(endpointUri, component);
     this.rCodeConfiguration = configuration;
@@ -58,7 +86,9 @@ public class RCodeEndpoint extends DefaultEndpoint {
 
   @Override
   public Consumer createConsumer(Processor processor) throws Exception {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    // TODO: Need to verify if the createConsumer is actually required.
+    // Might be an option for long running async calculations.
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
@@ -70,41 +100,63 @@ public class RCodeEndpoint extends DefaultEndpoint {
   @Override
   protected void doStart() throws RserveException, Exception {
     super.doStart();
+    // Connects after the endpoint has started
     connect();
   }
 
   @Override
-  protected void doStop() throws Exception  {
+  protected void doStop() throws Exception {
+    // Closes the RConnection when shuttding down
     rConnection.close();
     super.doStop();
   }
-
+  
+  /**
+   * Provides the information if the endpoint is connected.
+   * @return boolean
+   */
   public boolean isConnected() {
     return rConnection.isConnected();
   }
-
-  public void reconnect() throws RserveException, LoginException, ConnectException{
+  
+  /**
+   * Reconnects the 'R' connection.
+   */
+  public void reconnect() {
     connect();
   }
-
-  private void connect() throws RserveException, LoginException, ConnectException {
+  
+  /**
+   * Connects the RConnection to the underlying RServe instance.
+   */
+  private void connect() {
+    // Create the RConnection instance via the Factory pattern
     if (null == rConnection) {
       try {
         rConnection = RConnectionFactory.getInstance().createConnection(rCodeConfiguration);
       } catch (RserveException ex) {
-        throw ex;
+        LOGGER.error("Could not create a connection due to: {}", ex.getMessage());
+        throw new RuntimeCamelException(ex.getMessage());
       }
     }
+    // Login to the RConnection
     if (rConnection.needLogin()) {
       try {
         rConnection.login(rCodeConfiguration.getUser(), rCodeConfiguration.getPassword());
       } catch (RserveException ex) {
-        throw ex;
+        LOGGER.error("Unable to login due to: {}", ex.getMessage());
+        throw new RuntimeCamelException(ex.getMessage());
       }
     }
-    rConnection.setStringEncoding("utf8");
+    // Set the encoding to UTF-8
+    try {
+      rConnection.setStringEncoding("utf8");
+    } catch (RserveException ex) {
+      LOGGER.error("Unable to set the encoding due to: {}", ex.getMessage());
+      throw new RuntimeCamelException(ex.getMessage());
+    }
   }
-
+  
   public REXP sendEval(String command) throws RserveException {
     return rConnection.eval(command);
   }
