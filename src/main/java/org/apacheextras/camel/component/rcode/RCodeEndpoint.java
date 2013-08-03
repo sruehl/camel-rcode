@@ -78,11 +78,22 @@ public class RCodeEndpoint extends DefaultEndpoint {
     this.operation = operation;
   }
 
+  /**
+   * Creates the endpoints producer.
+   * @return RCodeProducer
+   * @throws Exception
+   */
   @Override
   public Producer createProducer() throws Exception {
     return new RCodeProducer(this, operation);
   }
 
+  /**
+   * Creates the endpoints consumer.
+   * @param processor Processor
+   * @return Consumer
+   * @throws Exception
+   */
   @Override
   public Consumer createConsumer(Processor processor) throws Exception {
     // TODO: Need to verify if the createConsumer is actually required.
@@ -90,12 +101,21 @@ public class RCodeEndpoint extends DefaultEndpoint {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  /**
+   * Validates of the rConnection is a singleton.
+   * @return boolean
+   */
   @Override
   public boolean isSingleton() {
     // RConnection is not thread-safe to be shared
     return false;
   }
 
+  /**
+   * Start the endpoint and connects to 'R'
+   * @throws RserveException
+   * @throws Exception
+   */
   @Override
   protected void doStart() throws RserveException, Exception {
     super.doStart();
@@ -103,6 +123,10 @@ public class RCodeEndpoint extends DefaultEndpoint {
     connect();
   }
 
+  /**
+   * Closes the RConnection and stops the endpoint.
+   * @throws Exception
+   */
   @Override
   protected void doStop() throws Exception {
     // Closes the RConnection when shuttding down
@@ -135,7 +159,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
         rConnection = RConnectionFactory.getInstance().createConnection(rCodeConfiguration);
       } catch (RserveException ex) {
         LOGGER.error("Could not create a connection due to: {}", ex.getMessage());
-        throw new RuntimeCamelException(ex.getMessage());
+        throw new RuntimeCamelException(ex);
       }
     }
     // Login to the RConnection
@@ -144,7 +168,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
         rConnection.login(rCodeConfiguration.getUser(), rCodeConfiguration.getPassword());
       } catch (RserveException ex) {
         LOGGER.error("Unable to login due to: {}", ex.getMessage());
-        throw new RuntimeCamelException(ex.getMessage());
+        throw new RuntimeCamelException(ex);
       }
     }
     // Set the encoding to UTF-8
@@ -152,7 +176,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
       rConnection.setStringEncoding("utf8");
     } catch (RserveException ex) {
       LOGGER.error("Unable to set the encoding due to: {}", ex.getMessage());
-      throw new RuntimeCamelException(ex.getMessage());
+      throw new RuntimeCamelException(ex);
     }
   }
   
@@ -166,6 +190,11 @@ public class RCodeEndpoint extends DefaultEndpoint {
   }
   
   
+  /**
+   * Sends a command to 'R' without getting a response back.
+   * @param command String
+   * @throws RserveException
+   */
   public void sendVoidEval(String command) throws RserveException {
     rConnection.voidEval(command);
   }
@@ -200,42 +229,82 @@ public class RCodeEndpoint extends DefaultEndpoint {
     this.rCodeConfiguration = configuration;
   }
 
+  /**
+   *
+   * @return host String
+   */
   public String getHost() {
     return rCodeConfiguration.getHost();
   }
 
+  /**
+   *
+   * @param host
+   */
   public void setHost(String host) {
     rCodeConfiguration.setHost(host);
   }
 
+  /**
+   *
+   * @return port int
+   */
   public int getPort() {
     return rCodeConfiguration.getPort();
   }
 
+  /**
+   * 
+   * @param port
+   */
   public void setPort(int port) {
     rCodeConfiguration.setPort(port);
   }
 
+  /**
+   *
+   * @return user String
+   */
   public String getUser() {
     return rCodeConfiguration.getUser();
   }
 
+  /**
+   *
+   * @param user
+   */
   public void setUser(String user) {
     rCodeConfiguration.setUser(user);
   }
 
+  /**
+   *
+   * @return password String
+   */
   public String getPassword() {
     return rCodeConfiguration.getPassword();
   }
 
+  /**
+   *
+   * @param password
+   */
   public void setPassword(String password) {
     rCodeConfiguration.setPassword(password);
   }
 
+  /**
+   *
+   * @return bufferSize long
+   */
   public long getBufferSize() {
     return getConfiguration().getBufferSize();
   }
 
+  /**
+   *
+   * @param bufferSize
+   */
   public void setBufferSize(long bufferSize) {
     getConfiguration().setBufferSize(bufferSize);
   }
