@@ -44,6 +44,7 @@ public class RCodeProducerParseEvalTest extends RCodeProducerTest {
     
     when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
     when(rConnection.parseAndEval(command)).thenReturn(rexpd);
+    when(rConnection.needLogin()).thenReturn(Boolean.TRUE);
     
     // Initialize a mock endpoint that receives at least one message
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
