@@ -36,6 +36,11 @@ public class RCodeProducer extends DefaultProducer {
 
   private RCodeOperation operation;
 
+  /**
+   * Creates an RCodeProducer with and endpoint and operation.
+   * @param rCodeEndpoint RCodeEndpoint
+   * @param operation RCodeOperation
+   */
   public RCodeProducer(RCodeEndpoint rCodeEndpoint, RCodeOperation operation) {
     super(rCodeEndpoint);
     this.endpoint = rCodeEndpoint;

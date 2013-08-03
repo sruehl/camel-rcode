@@ -17,7 +17,6 @@ package org.apacheextras.camel.component.rcode;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -95,22 +94,5 @@ public class RCodeProducerEvalTest extends RCodeProducerTest {
     });
     // Send the R command to calculate "c <- sqrt(2^2 + 2^2);"
     template.sendBody("direct:rcode", command);
-  }
-  
-  @Override
-  protected RouteBuilder createRouteBuilder() throws Exception {
-    return new RouteBuilder() {
-      @Override
-      public void configure() throws Exception {
-        // Handle exceptions by sending the exceptions to the mock endpoint
-        onException(Exception.class)
-            .handled(true)
-            .to("mock:error");
-        // Send commands to the RCode endpoint, operation is 'eval'
-        from("direct:rcode")
-            .to("rcode:localhost:6311/eval?user=test&password=test123&bufferSize=4194304")
-            .to("mock:rcode");
-      }
-    };
   }
 }
