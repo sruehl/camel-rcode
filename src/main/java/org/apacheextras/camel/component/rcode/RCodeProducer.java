@@ -18,7 +18,6 @@ package org.apacheextras.camel.component.rcode;
 import org.apache.camel.Exchange;
 import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.Message;
-import org.apache.camel.NoSuchHeaderException;
 import org.apache.camel.impl.DefaultProducer;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
