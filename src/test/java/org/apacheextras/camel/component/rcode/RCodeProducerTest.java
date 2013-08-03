@@ -20,6 +20,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.rosuda.REngine.REXP;
@@ -30,6 +32,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPString;
 
 /**
@@ -54,12 +57,12 @@ public class RCodeProducerTest extends CamelTestSupport {
   }
 
   @Test
-  public void sendEvalCommandTest() throws Exception {
+  public void sendEvalCmdVersionTest() throws Exception {
     
     // R command to retrieve the version string from the server
     final String command = "R.version.string";
     // Prefix of the REXP version result
-    final String expected = "R version";
+    final String expected = "R version 2.15.2 (2012-10-26)";
     // Create a REXP that contains the expected version string
     final REXP rexp = new REXPString(expected);
     when(rConnection.eval(command)).thenReturn(rexp);
@@ -88,7 +91,30 @@ public class RCodeProducerTest extends CamelTestSupport {
     // Check if at least one result could be retrieved
     mockEndpoint.assertIsSatisfied();
   }
-
+  
+  @Test
+  public void sendEvalCmdPythagorasTest() throws Exception{
+    final String command = "c <- sqrt(2^2 + 2^2);";
+    final double expected = 2.8284271247461903;
+    final REXP rexp = new REXPDouble(expected);
+    
+    when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
+    when(rConnection.eval(command)).thenReturn(rexp);
+    
+    final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
+    mockEndpoint.whenAnyExchangeReceived(new Processor() {
+      @Override
+      public void process(Exchange exchng) throws Exception {
+        try {
+        assertTrue(expected == ((REXPDouble)exchng.getIn().getBody()).asDouble());
+        } catch(Exception ex) {
+          fail("Did not receive the expected result!");
+        }
+      }
+    });
+    template.sendBody("direct:rcode", command);
+  }
+  
   @Override
   protected RouteBuilder createRouteBuilder() throws Exception {
     return new RouteBuilder() {
