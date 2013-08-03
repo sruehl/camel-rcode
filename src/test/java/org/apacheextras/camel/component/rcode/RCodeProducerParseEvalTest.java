@@ -22,7 +22,10 @@ import org.apache.camel.component.mock.MockEndpoint;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.rosuda.REngine.REXPDouble;
 
 /**
@@ -30,6 +33,9 @@ import org.rosuda.REngine.REXPDouble;
  * @author cemmersb
  */
 public class RCodeProducerParseEvalTest extends RCodeProducerTest {
+  
+  final String user = "test";
+  final String password = "test123";
   
   @Test
   public void sendParseAndEvalMatrixTest() throws Exception {
@@ -45,6 +51,12 @@ public class RCodeProducerParseEvalTest extends RCodeProducerTest {
     when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
     when(rConnection.parseAndEval(command)).thenReturn(rexpd);
     when(rConnection.needLogin()).thenReturn(Boolean.TRUE);
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) {
+        return null;
+      }
+    }).when(rConnection).login(user, password);
     
     // Initialize a mock endpoint that receives at least one message
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
@@ -73,7 +85,7 @@ public class RCodeProducerParseEvalTest extends RCodeProducerTest {
             .to("mock:error");
         // Send commands to the RCode endpoint, operation is 'parse_and_eval'
         from("direct:rcode")
-            .to("rcode:localhost:6311/parse_and_eval?user=test&password=test123&bufferSize=4194304")
+            .to("rcode:localhost:6311/parse_and_eval?user=" + user + "&password=" + password + "&bufferSize=4194304")
             .to("mock:rcode");
       }
     };
