@@ -18,7 +18,11 @@ package org.apacheextras.camel.component.rcode;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
@@ -27,6 +31,10 @@ import org.rosuda.REngine.Rserve.RserveException;
  * @author cemmersb
  */
 public class RCodeProducerTest extends CamelTestSupport {
+  
+  final String user = "test";
+  final String password = "test123";
+  
   RConnection rConnection = mock(RConnection.class, RETURNS_DEEP_STUBS);
 
   @Before
@@ -39,6 +47,16 @@ public class RCodeProducerTest extends CamelTestSupport {
         return rConnection;
       }
     };
+    
+    
+    
+    when(rConnection.needLogin()).thenReturn(Boolean.TRUE);
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) {
+        return null;
+      }
+    }).when(rConnection).login(user, password);
     super.setUp();
   }
 }
