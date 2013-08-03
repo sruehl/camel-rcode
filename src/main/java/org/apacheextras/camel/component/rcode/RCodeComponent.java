@@ -53,7 +53,7 @@ public class RCodeComponent extends DefaultComponent {
       newConfiguration = configuration.copy();
     }
     // Take the suffix of the URI element and fetch the operation after the '/'
-    String operation = remaining.substring(remaining.indexOf("/") + 1);
+    String operation = remaining.substring(remaining.indexOf('/') + 1);
     // Set the RCodeOperation value
     RCodeOperation rCodeOperation = RCodeOperation.valueOf(operation.toUpperCase());
     // Create the RCodeEndpoint based on uri, component, configuration and operation
