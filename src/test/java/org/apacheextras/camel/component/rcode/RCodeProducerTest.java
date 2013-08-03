@@ -47,9 +47,7 @@ public class RCodeProducerTest extends CamelTestSupport {
         return rConnection;
       }
     };
-    
-    
-    
+
     when(rConnection.needLogin()).thenReturn(Boolean.TRUE);
     doAnswer(new Answer<Void>() {
       @Override
