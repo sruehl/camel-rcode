@@ -89,7 +89,7 @@ public class RCodeProducerVoidEvalTest extends RCodeProducerTest {
             .to("mock:error");
         // Send commands to the RCode endpoint, operation is 'void_eval'
         from("direct:rcode")
-            .to("rcode:localhost:6311/void_eval?user=test&password=test123&bufferSize=4194304")
+            .to("rcode:localhost:6311/void_eval?user=test&password=test123&bufferSize=1073741825")
             .to("mock:rcode");
       }
     };
