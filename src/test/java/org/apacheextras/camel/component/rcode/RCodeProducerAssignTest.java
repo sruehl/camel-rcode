@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import static org.mockito.Mockito.doAnswer;
 import org.mockito.invocation.InvocationOnMock;
@@ -63,7 +62,7 @@ public class RCodeProducerAssignTest extends RCodeProducerTest {
             .to("mock:error");
         // Send commands to the RCode endpoint, operation is 'parse_and_eval'
         from("direct:rcode")
-            .to("rcode:localhost:6311/assign_content?user=test&password=test123&bufferSize=4194304")
+            .to("rcode:localhost:6311/assign_content?user=test&password=test123&bufferSize=10")
             .to("mock:rcode");
       }
     };
