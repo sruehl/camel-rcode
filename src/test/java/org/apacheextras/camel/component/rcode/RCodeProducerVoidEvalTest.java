@@ -17,55 +17,54 @@ package org.apacheextras.camel.component.rcode;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelTestSupport;
-import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.rosuda.REngine.Rserve.RConnection;
-import org.rosuda.REngine.Rserve.RserveException;
 
 /**
  *
  * @author cemmersb
  */
-public class RCodeProducerVoidEvalTest extends CamelTestSupport {
-  
-  RConnection rConnection = mock(RConnection.class, RETURNS_DEEP_STUBS);
+public class RCodeProducerVoidEvalTest extends RCodeProducerTest {
 
-  @Override
-  @Before
-  public void setUp() throws Exception {
-    // We supply a fake factory to mock the RConnection Instance.
-    RConnectionFactory.SingletonHolder.INSTANCE = new RConnectionFactory() {
-      @Override
-      public RConnection createConnection(RCodeConfiguration rCodeConfiguration) throws RserveException {
-        return rConnection;
-      }
-    };
-    super.setUp();
-  }
-  
+  // Path where the output file should be generated
+  private final String path = RCodeProducerVoidEvalTest.class.getProtectionDomain()
+      .getCodeSource().getLocation().getPath() + "/german_map.pdf";
+  // RCode to generate a german map as pdf
+  private final String command = "library(maps);\n"
+      + "library(mapdata);\n"
+      + "pdf(\"" + path + "\");\n"
+      + "map('worldHires', 'germany');\n"
+      + "dev.off()";
+
   @Test
   public void sendVoidEvalCmdMapTest() throws Exception {
-    // Path where the output file should be generated
-    final String path = RCodeProducerVoidEvalTest.class.getProtectionDomain()
-        .getCodeSource().getLocation().getPath() + "/german_map.pdf";
-    // RCode to generate a german map as pdf
-    final String command = "library(maps);\n"
-        + "library(mapdata);\n"
-        + "pdf(\"" + path + "\");\n"
-        + "map('worldHires', 'germany');\n"
-        + "dev.off()";
-    
     // Configure mock endpoint for assertions
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
     mockEndpoint.expectedBodiesReceived(null); // void_eval returns a body with null value
-    
+
+    when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) {
+        return null;
+      }
+    }).when(rConnection).voidEval(command);
+
+    // Send the command to the RCode component
+    template.sendBody("direct:rcode", command);
+    // Assert if the return value does not contain any body
+    mockEndpoint.assertIsSatisfied();
+  }
+  
+  @Test
+  public void sendVoidEvalCmdHeaderTest() throws Exception {
+    // Configure mock endpoint for assertions
+    final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
+    mockEndpoint.expectedBodiesReceived(null); // void_eval returns a body with null value
+
     when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
     doAnswer(new Answer<Void>() {
       @Override
@@ -74,10 +73,8 @@ public class RCodeProducerVoidEvalTest extends CamelTestSupport {
       }
     }).when(rConnection).voidEval(command);
     
-    // Send the command to the RCode component
-    template.sendBody("direct:rcode", command);
-
-    // Assert if the return value does not contain any body
+    template.sendBodyAndHeader("direct:rcode", command,
+        RCodeConstants.RSERVE_OPERATION, RCodeOperation.VOID_EVAL);
     mockEndpoint.assertIsSatisfied();
   }
 
@@ -90,7 +87,7 @@ public class RCodeProducerVoidEvalTest extends CamelTestSupport {
         onException(Exception.class)
             .handled(true)
             .to("mock:error");
-        // Send commands to the RCode endpoint
+        // Send commands to the RCode endpoint, operation is 'void_eval'
         from("direct:rcode")
             .to("rcode:localhost:6311/void_eval?user=test&password=test123&bufferSize=4194304")
             .to("mock:rcode");
