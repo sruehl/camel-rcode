@@ -22,8 +22,14 @@ package org.apacheextras.camel.component.rcode;
  */
 public final class RCodeConstants {
   
+  // Overwriting the default consutructur
+  private RCodeConstants() {
+    // hide the utility class from public access
+  }
+  
   /**
    * Denotes the operations key value in the header of an exchange message.
    */
   public static final String RSERVE_OPERATION = "RSRV_OP";
+  
 }
