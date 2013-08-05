@@ -41,7 +41,7 @@ public class RCodeProducerTest extends CamelTestSupport {
   @Override
   public void setUp() throws Exception {
     // We supply a fake factory to mock the RConnection Instance.
-    RConnectionFactory.SingletonHolder.INSTANCE = new RConnectionFactory() {
+    RConnectionFactory.SingletonHolder.instance = new RConnectionFactory() {
       @Override
       public RConnection createConnection(RCodeConfiguration rCodeConfiguration) throws RserveException {
         return rConnection;
