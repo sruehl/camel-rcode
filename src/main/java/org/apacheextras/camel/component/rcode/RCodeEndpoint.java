@@ -115,7 +115,7 @@ public class RCodeEndpoint extends DefaultEndpoint {
    * @throws Exception
    */
   @Override
-  protected void doStart() throws RserveException, Exception {
+  protected void doStart() throws Exception {
     super.doStart();
     // Connects after the endpoint has started
     connect();

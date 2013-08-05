@@ -48,7 +48,7 @@ public class RCodeProducer extends DefaultProducer {
   }
 
   @Override
-  public void process(Exchange exchange) throws RserveException, LoginException, ConnectException,
+  public void process(Exchange exchange) throws LoginException, ConnectException,
                                                 REngineException, REXPMismatchException,
                                                 CamelExchangeException {
     final Message in = exchange.getIn();

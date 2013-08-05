@@ -42,8 +42,7 @@ public class RCodeComponent extends DefaultComponent {
    * @return Endpoint
    */
   @Override
-  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters)
-      throws URISyntaxException, Exception {
+  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
     // Retrieve the RCodeConfiguration if it does not exist. 
     // Otherwise copy the existing configuration.
     RCodeConfiguration newConfiguration;

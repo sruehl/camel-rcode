@@ -41,6 +41,15 @@ public final class RCodeConfiguration implements Cloneable {
    * <code>2MB</code> in bytes.
    */
   public static final long DEFAULT_BUFFER_SIZE = 1024 * 1024 * 2;
+  /** 
+   * Lowest buffer size is 32KB.
+   */
+   public static final long LOWEST_BUFFER_SIZE = 32768;
+   /**
+    * Largest buffer size is 1GB.
+    */
+   public static final long LARGEST_BUFFER_SIZE = 1073741824;
+  
   // Initialize the default host
   private String host = DEFAULT_RSERVE_HOST;
   // Initialize the default port
@@ -163,10 +172,10 @@ public final class RCodeConfiguration implements Cloneable {
   public void setBufferSize(long bufferSize) {
     // Set the buffer size to it's limits in bytes
     // Note: The boundaries that can be processed are 32K and 1GB
-    if (bufferSize < 1024 * 32) { // lowest buffer 32KB
-      this.bufferSize = 1024 * 32;
-    } else if (bufferSize > 1024 * 1024 * 1024) { // largest buffer 1GB
-      this.bufferSize = 1024 * 1024 * 1024;
+    if (bufferSize < LOWEST_BUFFER_SIZE) {
+      this.bufferSize = LOWEST_BUFFER_SIZE;
+    } else if (bufferSize > LARGEST_BUFFER_SIZE) {
+      this.bufferSize = LARGEST_BUFFER_SIZE;
     }
     this.bufferSize = bufferSize;
   }
