@@ -42,8 +42,9 @@ public class RCodeProducerVoidEvalTest extends RCodeProducerTest {
   @Test
   public void sendVoidEvalCmdMapTest() throws Exception {
     // Configure mock endpoint for assertions
+    final Object obj = null;
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
-    mockEndpoint.expectedBodiesReceived(null); // void_eval returns a body with null value
+    mockEndpoint.expectedBodiesReceived(obj); // void_eval returns a body with null value
 
     when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
     doAnswer(new Answer<Void>() {
@@ -63,7 +64,8 @@ public class RCodeProducerVoidEvalTest extends RCodeProducerTest {
   public void sendVoidEvalCmdHeaderTest() throws Exception {
     // Configure mock endpoint for assertions
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
-    mockEndpoint.expectedBodiesReceived(null); // void_eval returns a body with null value
+    final Object obj = null;
+    mockEndpoint.expectedBodiesReceived(obj); // void_eval returns a body with null value
 
     when(rConnection.isConnected()).thenReturn(Boolean.TRUE);
     doAnswer(new Answer<Void>() {

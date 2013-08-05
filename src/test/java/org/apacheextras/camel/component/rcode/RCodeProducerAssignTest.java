@@ -35,9 +35,10 @@ public class RCodeProducerAssignTest extends RCodeProducerTest {
   public void sendAssignVariableTest() throws Exception {
     final Map<String, String> assignments = new HashMap<String, String>();
     assignments.put("var1", "3 * 5");
-
+    
+    final Object obj = null;
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
-    mockEndpoint.expectedBodiesReceived(null);
+    mockEndpoint.expectedBodiesReceived(obj);
 
     for (Entry<String, String> assignment : assignments.entrySet()) {
       doAnswer(new Answer<Void>() {

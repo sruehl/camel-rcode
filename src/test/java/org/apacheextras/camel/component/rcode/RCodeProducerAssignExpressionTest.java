@@ -36,9 +36,9 @@ public class RCodeProducerAssignExpressionTest extends RCodeProducerTest {
   public void sendAssignExpressionTest() throws Exception {
     final Map<String, REXP> assignments = new HashMap<String, REXP>();
     assignments.put("x", new REXPString("2^2"));
-    
+    final Object obj = null;
     final MockEndpoint mockEndpoint = getMockEndpoint("mock:rcode");
-    mockEndpoint.expectedBodiesReceived(null);
+    mockEndpoint.expectedBodiesReceived(obj);
     
     for (Map.Entry<String, REXP> assignment : assignments.entrySet()) {
       doAnswer(new Answer<Void>() {
