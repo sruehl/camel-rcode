@@ -220,17 +220,6 @@ public class RCodeEndpoint extends DefaultEndpoint {
   }
 
   /**
-   * Returns a value from an environment.
-   * @param symbol String
-   * @param environment REXP
-   * @return REXP
-   * @throws REngineException
-   */
-  public REXP sendGet(String symbol, REXP environment) throws REngineException {
-    return rConnection.get(symbol, environment, true);
-  }
-
-  /**
    * Sends an R command as String, parses and executes the code before it returns
    * the result as R expression.
    * @param command String

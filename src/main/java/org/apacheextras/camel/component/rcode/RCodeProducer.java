@@ -93,12 +93,6 @@ public class RCodeProducer extends DefaultProducer {
         endpoint.sendVoidEval(command);
       }
       break;
-      case GET_VALUE: {
-        final Entry<String, REXP> environmentValue = in.getMandatoryBody(Entry.class);
-        REXP rexp = endpoint.sendGet(environmentValue.getKey(), environmentValue.getValue());
-        exchange.getOut().setBody(rexp);
-      }
-      break;
       case PARSE_AND_EVAL: {
         final String command = in.getMandatoryBody(String.class);
         REXP rexp = endpoint.sendParseAndEval(command);
