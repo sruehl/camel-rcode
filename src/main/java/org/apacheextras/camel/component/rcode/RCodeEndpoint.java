@@ -96,8 +96,6 @@ public class RCodeEndpoint extends DefaultEndpoint {
    */
   @Override
   public Consumer createConsumer(Processor processor) throws Exception {
-    // TODO: Need to verify if the createConsumer is actually required.
-    // Might be an option for long running async calculations.
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

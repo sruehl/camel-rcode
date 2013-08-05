@@ -16,7 +16,6 @@
 package org.apacheextras.camel.component.rcode;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultProducer;
 import org.rosuda.REngine.REXP;
@@ -28,6 +27,7 @@ import javax.security.auth.login.LoginException;
 import java.net.ConnectException;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.camel.CamelExchangeException;
 
 /** @author cemmersb */
 public class RCodeProducer extends DefaultProducer {
@@ -49,9 +49,11 @@ public class RCodeProducer extends DefaultProducer {
 
   @Override
   public void process(Exchange exchange) throws RserveException, LoginException, ConnectException,
-                                                InvalidPayloadException, REngineException, REXPMismatchException {
+                                                REngineException, REXPMismatchException,
+                                                CamelExchangeException {
     final Message in = exchange.getIn();
     final Map<String, Object> headers = in.getHeaders();
+    final RCodeOperation configuredOperation = operation;
 
     if (!endpoint.isConnected()) {
       endpoint.reconnect();
@@ -61,14 +63,21 @@ public class RCodeProducer extends DefaultProducer {
       final String op = headers.get(RCodeConstants.RSERVE_OPERATION).toString().toUpperCase();
       operation = RCodeOperation.valueOf(op);
     }
+    
     executeOperation(in);
+    
+    // Reset the operation to the original value in case of header 
+    // controlled operation changes
+    if (headers.containsKey(RCodeConstants.RSERVE_OPERATION)) {
+      operation = configuredOperation;
+    }
     
     exchange.getOut().getHeaders().putAll(in.getHeaders());
     exchange.getOut().setAttachments(in.getAttachments());
   }
 
-  private Exchange executeOperation(Message in)
-          throws REngineException, REXPMismatchException, InvalidPayloadException {
+  private void executeOperation(Message in)
+          throws REngineException, REXPMismatchException, CamelExchangeException {
     final Exchange exchange = in.getExchange();
 
     switch (operation) {
@@ -100,6 +109,5 @@ public class RCodeProducer extends DefaultProducer {
       }
       break;
     }
-    return exchange;
   }
 }
