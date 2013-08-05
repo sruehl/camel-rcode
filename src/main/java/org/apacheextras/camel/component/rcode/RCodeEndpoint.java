@@ -199,18 +199,45 @@ public class RCodeEndpoint extends DefaultEndpoint {
     rConnection.voidEval(command);
   }
 
+  /**
+   * Sends a symbol and a String expression to the R code environment.
+   * @param symbol String
+   * @param content String
+   * @throws RserveException
+   */
   public void sendAssign(String symbol, String content) throws RserveException {
     rConnection.assign(symbol, content);
   }
 
+  /**
+   * Sends a symbol and an R expression to the R code environment.
+   * @param symbol String
+   * @param rexp REXP
+   * @throws RserveException
+   */
   public void sendAssign(String symbol, REXP rexp) throws RserveException {
     rConnection.assign(symbol, rexp);
   }
 
+  /**
+   * Returns a value from an environment.
+   * @param symbol String
+   * @param environment REXP
+   * @return REXP
+   * @throws REngineException
+   */
   public REXP sendGet(String symbol, REXP environment) throws REngineException {
     return rConnection.get(symbol, environment, true);
   }
 
+  /**
+   * Sends an R command as String, parses and executes the code before it returns
+   * the result as R expression.
+   * @param command String
+   * @return REXP
+   * @throws REngineException
+   * @throws REXPMismatchException
+   */
   public REXP sendParseAndEval(String command) throws REngineException, REXPMismatchException {
     return rConnection.parseAndEval(command);
   }
