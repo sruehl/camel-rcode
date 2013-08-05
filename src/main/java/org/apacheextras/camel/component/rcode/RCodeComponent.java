@@ -19,7 +19,6 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
