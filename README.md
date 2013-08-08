@@ -24,7 +24,6 @@ entering the R console.
 - sendVoidEval(String command) - VOID_EVAL
 - sendAssign(String symbol, String content) - ASSIGN_CONTENT
 - sendAssign(String symbol, REXP rexp) - ASSIGN_EXPRESSION
-- sendGet(String symbol, REXP environment) - GET_VALUE
 - sendParseAndEval(String command) - PARSE_AND_EVAL
 
 ## URI format
