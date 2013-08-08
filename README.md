@@ -32,7 +32,7 @@ entering the R console.
 - <b>rcode</b> is the unique component key
 - <b>host</b> defines a hostname as [Java URI](http://docs.oracle.com/javase/6/docs/api/java/net/URI.html)
 - <b>port</b> defines the connection [port] (http://docs.oracle.com/javase/6/docs/api/java/net/URI.html)
-- <b>operation</b> defines the operation executed via the endpoint. The operation can be any of the folling values [EVAL | VOID_EVAL | ASSIGN_CONTENT | ASSIGN_EXPRESSION | GET_VALUE | PARSE_AND_EVAL]
+- <b>operation</b> defines the operation executed via the endpoint. The operation can be any of the folling values [EVAL | VOID_EVAL | ASSIGN_CONTENT | ASSIGN_EXPRESSION | PARSE_AND_EVAL]
 - <b>options</b> configure additional parameters.
 
 ## Options
