@@ -19,7 +19,6 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -42,8 +41,7 @@ public class RCodeComponent extends DefaultComponent {
    * @return Endpoint
    */
   @Override
-  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters)
-      throws URISyntaxException, Exception {
+  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
     // Retrieve the RCodeConfiguration if it does not exist. 
     // Otherwise copy the existing configuration.
     RCodeConfiguration newConfiguration;
@@ -53,7 +51,7 @@ public class RCodeComponent extends DefaultComponent {
       newConfiguration = configuration.copy();
     }
     // Take the suffix of the URI element and fetch the operation after the '/'
-    String operation = remaining.substring(remaining.indexOf("/") + 1);
+    String operation = remaining.substring(remaining.indexOf('/') + 1);
     // Set the RCodeOperation value
     RCodeOperation rCodeOperation = RCodeOperation.valueOf(operation.toUpperCase());
     // Create the RCodeEndpoint based on uri, component, configuration and operation

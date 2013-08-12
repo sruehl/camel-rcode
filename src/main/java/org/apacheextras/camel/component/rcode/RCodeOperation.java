@@ -21,6 +21,5 @@ public enum RCodeOperation {
   ASSIGN_EXPRESSION,
   EVAL,
   VOID_EVAL,
-  GET_VALUE,
   PARSE_AND_EVAL
 }
