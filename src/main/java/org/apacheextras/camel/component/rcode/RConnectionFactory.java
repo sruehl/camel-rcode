@@ -13,9 +13,13 @@ public class RConnectionFactory {
 
   protected RConnectionFactory() {
   }
-
+  
+  /**
+   * Returns the RConnection instance.
+   * @return RConnectionFactory
+   */
   public static RConnectionFactory getInstance() {
-    return SingletonHolder.INSTANCE;
+    return SingletonHolder.instance;
   }
 
   /**
@@ -31,8 +35,10 @@ public class RConnectionFactory {
     return new RConnection(rCodeConfiguration.getHost(), rCodeConfiguration.getPort());
   }
 
-
+  /**
+   * Contains the instance of the RConnection factory.
+   */
   protected static class SingletonHolder {
-    public static RConnectionFactory INSTANCE = new RConnectionFactory();
+    public static RConnectionFactory instance = new RConnectionFactory();
   }
 }

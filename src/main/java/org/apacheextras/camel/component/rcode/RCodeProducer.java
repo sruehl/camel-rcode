@@ -16,19 +16,17 @@
 package org.apacheextras.camel.component.rcode;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.Message;
-import org.apache.camel.NoSuchHeaderException;
 import org.apache.camel.impl.DefaultProducer;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
-import org.rosuda.REngine.Rserve.RserveException;
 
 import javax.security.auth.login.LoginException;
 import java.net.ConnectException;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.camel.CamelExchangeException;
 
 /** @author cemmersb */
 public class RCodeProducer extends DefaultProducer {
@@ -37,6 +35,11 @@ public class RCodeProducer extends DefaultProducer {
 
   private RCodeOperation operation;
 
+  /**
+   * Creates an RCodeProducer with and endpoint and operation.
+   * @param rCodeEndpoint RCodeEndpoint
+   * @param operation RCodeOperation
+   */
   public RCodeProducer(RCodeEndpoint rCodeEndpoint, RCodeOperation operation) {
     super(rCodeEndpoint);
     this.endpoint = rCodeEndpoint;
@@ -44,29 +47,36 @@ public class RCodeProducer extends DefaultProducer {
   }
 
   @Override
-  public void process(Exchange exchange) throws NoSuchHeaderException,
-                                                RserveException, LoginException, ConnectException,
-                                                InvalidPayloadException,
-                                                REngineException, REXPMismatchException {
+  public void process(Exchange exchange) throws LoginException, ConnectException,
+                                                REngineException, REXPMismatchException,
+                                                CamelExchangeException {
     final Message in = exchange.getIn();
     final Map<String, Object> headers = in.getHeaders();
+    final RCodeOperation configuredOperation = operation;
 
     if (!endpoint.isConnected()) {
       endpoint.reconnect();
     }
-
+    
     if (headers.containsKey(RCodeConstants.RSERVE_OPERATION)) {
-      executeOperation(in, headers);
-    } else {
-      throw new NoSuchHeaderException(exchange, RCodeConstants.RSERVE_OPERATION, RCodeOperation.class);
+      final String op = headers.get(RCodeConstants.RSERVE_OPERATION).toString().toUpperCase();
+      operation = RCodeOperation.valueOf(op);
     }
-
+    
+    executeOperation(in);
+    
+    // Reset the operation to the original value in case of header 
+    // controlled operation changes
+    if (headers.containsKey(RCodeConstants.RSERVE_OPERATION)) {
+      operation = configuredOperation;
+    }
+    
     exchange.getOut().getHeaders().putAll(in.getHeaders());
     exchange.getOut().setAttachments(in.getAttachments());
   }
 
-  private Exchange executeOperation(Message in, Map<String, Object> headers)
-          throws InvalidPayloadException, REngineException, REXPMismatchException {
+  private void executeOperation(Message in)
+          throws REngineException, REXPMismatchException, CamelExchangeException {
     final Exchange exchange = in.getExchange();
 
     switch (operation) {
@@ -91,12 +101,6 @@ public class RCodeProducer extends DefaultProducer {
         endpoint.sendVoidEval(command);
       }
       break;
-      case GET_VALUE: {
-        final Entry<String, REXP> environmentValue = in.getMandatoryBody(Entry.class);
-        REXP rexp = endpoint.sendGet(environmentValue.getKey(), environmentValue.getValue());
-        exchange.getOut().setBody(rexp);
-      }
-      break;
       case PARSE_AND_EVAL: {
         final String command = in.getMandatoryBody(String.class);
         REXP rexp = endpoint.sendParseAndEval(command);
@@ -104,6 +108,5 @@ public class RCodeProducer extends DefaultProducer {
       }
       break;
     }
-    return exchange;
   }
 }
