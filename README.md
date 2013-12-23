@@ -1,3 +1,8 @@
+### !!!REPOSITORY MIGRATED!!!
+The component has been contributed to apache-extra and will be maintained within their repository.
+Please checkout the sources directly from [Camel Extra](https://code.google.com/a/apache-extras.org/p/camel-extra/source/browse/#svn%2Ftrunk%2Fcomponents%2Fcamel-rcode)
+to get the latest version of the code.
+
 # Introduction: 'camel-rcode'
 The sources within this repository provide an [Apache Camel](http://camel.apache.org/) 
 RCode component to integrate with the statistics environment [R](http://www.r-project.org/)
